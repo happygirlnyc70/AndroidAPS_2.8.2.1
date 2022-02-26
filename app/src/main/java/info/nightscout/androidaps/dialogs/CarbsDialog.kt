@@ -28,8 +28,8 @@ import info.nightscout.androidaps.queue.Callback
 import info.nightscout.androidaps.utils.*
 import info.nightscout.androidaps.utils.alertDialogs.OKDialog
 import info.nightscout.androidaps.utils.resources.ResourceHelper
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
 import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -105,6 +105,12 @@ class CarbsDialog : DialogFragmentWithDate() {
     ): View {
         onCreateViewGeneral()
         _binding = DialogCarbsBinding.inflate(inflater, container, false)
+        binding.time.setOnValueChangedListener { timeOffset: Double ->
+            run {
+                val newTime = eventTimeOriginal + timeOffset.toLong() * 1000 * 60
+                updateDateTime(newTime)
+            }
+        }
         return binding.root
     }
 
@@ -131,32 +137,46 @@ class CarbsDialog : DialogFragmentWithDate() {
             savedInstanceState?.getDouble("carbs")
                 ?: 0.0, 0.0, maxCarbs, 1.0, DecimalFormat("0"), false, binding.okcancel.ok, textWatcher
         )
-
-        binding.plus1.text = toSignedString(sp.getInt(R.string.key_carbs_button_increment_1, FAV1_DEFAULT))
+        val plus1text = toSignedString(sp.getInt(R.string.key_carbs_button_increment_1, FAV1_DEFAULT))
+        binding.plus1.text = plus1text
+        binding.plus1.contentDescription = rh.gs(R.string.treatments_wizard_carbs_label) +  " " + plus1text
         binding.plus1.setOnClickListener {
             binding.carbs.value = max(
                 0.0, binding.carbs.value
                     + sp.getInt(R.string.key_carbs_button_increment_1, FAV1_DEFAULT)
             )
             validateInputs()
+            binding.carbs.announceValue()
         }
 
-        binding.plus2.text = toSignedString(sp.getInt(R.string.key_carbs_button_increment_2, FAV2_DEFAULT))
+        val plus2text = toSignedString(sp.getInt(R.string.key_carbs_button_increment_2, FAV2_DEFAULT))
+        binding.plus2.text = plus2text
+        binding.plus2.contentDescription =  rh.gs(R.string.treatments_wizard_carbs_label) +  " " + plus2text
         binding.plus2.setOnClickListener {
             binding.carbs.value = max(
                 0.0, binding.carbs.value
                     + sp.getInt(R.string.key_carbs_button_increment_2, FAV2_DEFAULT)
             )
             validateInputs()
+            binding.carbs.announceValue()
         }
-
-        binding.plus3.text = toSignedString(sp.getInt(R.string.key_carbs_button_increment_3, FAV3_DEFAULT))
+        val plus3text = toSignedString(sp.getInt(R.string.key_carbs_button_increment_3, FAV3_DEFAULT))
+        binding.plus3.text = plus3text
+        binding.plus2.contentDescription = rh.gs(R.string.treatments_wizard_carbs_label) +  " " + plus3text
         binding.plus3.setOnClickListener {
             binding.carbs.value = max(
                 0.0, binding.carbs.value
                     + sp.getInt(R.string.key_carbs_button_increment_3, FAV3_DEFAULT)
             )
             validateInputs()
+            binding.carbs.announceValue()
+        }
+
+        setOnValueChangedListener { eventTime: Long ->
+            run {
+                val timeOffset = ((eventTime - eventTimeOriginal) / (1000 * 60)).toDouble()
+                binding.time.value = timeOffset
+            }
         }
 
         iobCobCalculator.ads.actualBg()?.let { bgReading ->
@@ -175,6 +195,9 @@ class CarbsDialog : DialogFragmentWithDate() {
             binding.hypoTt.isChecked = false
             binding.activityTt.isChecked = false
         }
+        binding.duration.editText?.id?.let { binding.durationLabel.labelFor = it }
+        binding.time.editText?.id?.let { binding.timeLabel.labelFor = it }
+        binding.carbs.editText?.id?.let { binding.carbsLabel.labelFor = it }
     }
 
     override fun onDestroyView() {
@@ -229,10 +252,6 @@ class CarbsDialog : DialogFragmentWithDate() {
             )
 
         val timeOffset = binding.time.value.toInt()
-        eventTime -= eventTime % 1000
-        val time = eventTime + timeOffset * 1000 * 60
-        if (timeOffset != 0)
-            actions.add(rh.gs(R.string.time) + ": " + dateUtil.dateAndTimeString(time))
         if (useAlarm && carbs > 0 && timeOffset > 0)
             actions.add(rh.gs(R.string.alarminxmin, timeOffset).formatColor(rh, R.color.info))
         val duration = binding.duration.value.toInt()
@@ -330,7 +349,7 @@ class CarbsDialog : DialogFragmentWithDate() {
                         detailedBolusInfo.context = context
                         detailedBolusInfo.notes = notes
                         detailedBolusInfo.carbsDuration = T.hours(duration.toLong()).msecs()
-                        detailedBolusInfo.carbsTimestamp = time
+                        detailedBolusInfo.carbsTimestamp = eventTime
                         uel.log(if (duration == 0) Action.CARBS else Action.EXTENDED_CARBS, Sources.CarbDialog,
                                 notes,
                                 ValueWithUnit.Timestamp(eventTime).takeIf { eventTimeChanged },
@@ -348,7 +367,7 @@ class CarbsDialog : DialogFragmentWithDate() {
                         })
                     }
                     if (useAlarm && carbs > 0 && timeOffset > 0) {
-                        carbTimer.scheduleReminder(T.mins(timeOffset.toLong()).secs())
+                        carbTimer.scheduleReminder(T.mins(timeOffset.toLong()).secs().toInt())
                     }
                 }, null)
             }
