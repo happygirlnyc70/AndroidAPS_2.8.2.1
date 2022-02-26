@@ -16,23 +16,23 @@
         android:visibility="gone">
 
         <CheckBox
-            android:id="@+id/objectives_fake"
+            android:id="@+id/fake"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
             android:layout_weight="1"
             android:text="Enable fake time and progress" />
 
-        <Button
-            android:id="@+id/objectives_reset"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset"
+            style="@style/OkCancelButton.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/objectives_recyclerview"
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
