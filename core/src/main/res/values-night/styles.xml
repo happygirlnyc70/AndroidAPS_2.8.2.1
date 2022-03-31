@@ -121,7 +121,7 @@
         <item name="viewPortbackgroundColor">@color/white_alpha_20</item>
         <item name="tempTargetBackgroundColor">@color/tempTargetBackground</item>
         <!---CGM source-->
-        <item name="cgmdexColor">@color/colorLightGray</item>
+        <item name="cgmdexColor">@color/byodagray</item>
         <item name="cgmxdripColor">@color/colorCalibrationButton</item>
         <!---BG color-->
         <item name="bgLow">@color/low</item>
@@ -169,6 +169,13 @@
         <item name="dummyBackground">@color/dummy_background</item>
         <!-- Icon Colors -->
         <item name="icCheckboxTrendColor">@color/white</item>
+        <!-- Overview Buttons -->
+        <item name="icBolusColor">@color/colorInsulinButton</item>
+        <item name="icBolusCarbsColor">@color/colorCarbsButton</item>
+        <item name="icCalculatorColor">@color/colorCalculatorButton</item>
+        <item name="icQuickWizardColor">@color/colorQuickWizardButton</item>
+        <item name="icCalibrationColor">@color/colorCalibrationButton</item>
+        <item name="icTreatmentColor">@color/colorTreatmentButton</item>
     </style>
 
     <style name="Theme.MaterialComponents.DayNight.DarkActionBar" parent="Theme.MaterialComponents.DayNight.Bridge"/>
