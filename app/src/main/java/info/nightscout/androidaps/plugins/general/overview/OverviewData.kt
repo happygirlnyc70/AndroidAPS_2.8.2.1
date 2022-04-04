@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.general.overview
 import android.content.Context
 import android.graphics.DashPathEffect
 import android.graphics.Paint
+import androidx.annotation.ColorInt
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
@@ -63,7 +64,7 @@ class OverviewData @Inject constructor(
 
     fun reset() {
         pumpStatus = ""
-        calcProgress = ""
+        calcProgressPct = 100
         lastBg = null
         bolusIob = null
         basalIob = null
@@ -121,7 +122,7 @@ class OverviewData @Inject constructor(
      * CALC PROGRESS
      */
 
-    var calcProgress: String = ""
+    var calcProgressPct: Int = 100
 
     /*
      * BG
@@ -129,23 +130,23 @@ class OverviewData @Inject constructor(
 
     var lastBg: GlucoseValue? = null
 
-    private val isLow: Boolean
+    val isLow: Boolean
         get() = lastBg?.let { lastBg ->
             lastBg.valueToUnits(profileFunction.getUnits()) < defaultValueHelper.determineLowLine()
         } ?: false
 
-    private val isHigh: Boolean
+    val isHigh: Boolean
         get() = lastBg?.let { lastBg ->
             lastBg.valueToUnits(profileFunction.getUnits()) > defaultValueHelper.determineHighLine()
         } ?: false
 
-    fun lastBgColor(context: Context?): Int {
-        return when {
+    @ColorInt
+    fun lastBgColor(context: Context?): Int =
+        when {
             isLow  -> rh.gac(context, R.attr.bgLow)
-            isHigh -> rh.gac(context, R.attr.bgHigh)
+            isHigh -> rh.gac(context, R.attr.highColor)
             else   -> rh.gac(context, R.attr.bgInRange)
         }
-    }
 
     val lastBgDescription: String
         get() = when {
@@ -195,9 +196,13 @@ class OverviewData @Inject constructor(
                 }
             } ?: R.drawable.ic_cp_basal_no_tbr
 
+    // will be removed if a solution of getting the right color for widget is solved
     val temporaryBasalColor: Int
         get() = iobCobCalculator.getTempBasalIncludingConvertedExtended(dateUtil.now())?.let { rh.gc(R.color.basal) }
-            ?: rh.gc(R.color.defaulttextcolor)
+            ?: rh.gc(R.color.textAppearancemediumDark)
+
+    fun temporaryBasalColor(context: Context?): Int = iobCobCalculator.getTempBasalIncludingConvertedExtended(dateUtil.now())?.let { rh.gac(context , R.attr.basal) }
+            ?: rh.gac(context, R.attr.textAppearancemediumColor)
 
     /*
      * EXTENDED BOLUS
@@ -552,7 +557,7 @@ class OverviewData @Inject constructor(
 
         // ProfileSwitch
         repository.getEffectiveProfileSwitchDataFromTimeToTime(fromTime, endTime, true).blockingGet()
-            .map { EffectiveProfileSwitchDataPoint(it) }
+            .map { EffectiveProfileSwitchDataPoint(it,rh) }
             .forEach(filteredTreatments::add)
 
         // OfflineEvent
@@ -570,7 +575,7 @@ class OverviewData @Inject constructor(
         // Extended bolus
         if (!activePlugin.activePump.isFakingTempsByExtendedBoluses) {
             repository.getExtendedBolusDataFromTimeToTime(fromTime, endTime, true).blockingGet()
-                .map { ExtendedBolusDataPoint(it) }
+                .map { ExtendedBolusDataPoint(it, rh) }
                 .filter { it.duration != 0L }
                 .forEach {
                     it.y = getNearestBg(it.x.toLong())

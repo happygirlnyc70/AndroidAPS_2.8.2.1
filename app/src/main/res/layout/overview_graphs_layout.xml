@@ -15,7 +15,7 @@
             android:id="@+id/bg_graph"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:contentDescription="@string/a11y_graph"/>
+            android:contentDescription="@string/a11y_graph" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -49,14 +49,6 @@
                 app:srcCompat="@drawable/ic_arrow_drop_down_white_24dp" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/iob_calculation_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
 

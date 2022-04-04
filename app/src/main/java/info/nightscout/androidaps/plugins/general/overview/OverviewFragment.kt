@@ -5,8 +5,9 @@ import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.AnimationDrawable
 import android.os.Build
 import android.os.Bundle
@@ -196,7 +197,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             false
         }
         prepareGraphsIfNeeded(overviewMenus.setting.size)
-        overviewMenus.setupChartMenu(binding.graphsLayout.chartMenuButton, overviewData, ::updateGraph)
+        context?.let { overviewMenus.setupChartMenu(it, binding.graphsLayout.chartMenuButton) }
 
         binding.activeProfile.setOnClickListener(this)
         binding.activeProfile.setOnLongClickListener(this)
@@ -214,13 +215,6 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.infoLayout.apsMode.setOnClickListener(this)
         binding.infoLayout.apsMode.setOnLongClickListener(this)
         binding.activeProfile.setOnLongClickListener(this)
-
-        binding.graphsLayout.simplifyCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                sp.putBoolean(rh.gs(R.string.key_therapy_events_visible), isChecked)
-                updateGraph("SimplifyCheckbox Change")
-            }
-        }
     }
 
     @Synchronized
@@ -328,7 +322,6 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         }
         handler.postDelayed(refreshLoop, 60 * 1000L)
 
-        binding.graphsLayout.simplifyCheckbox.isChecked = sp.getBoolean(R.string.key_therapy_events_visible, true)
         updateTime("onResume")
         updateCalcProgress("onResume")
         updateProfile("onResume")
@@ -568,9 +561,17 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.buttonsLayout.calibrationButton.visibility = (xDripIsBgSource && actualBG != null && sp.getBoolean(R.string.key_show_calibration_button, true)).toVisibility()
         if (dexcomIsSource) {
             binding.buttonsLayout.cgmButton.setCompoundDrawablesWithIntrinsicBounds(null, rh.gd(R.drawable.ic_byoda), null, null)
+            for (drawable in binding.buttonsLayout.cgmButton.compoundDrawables) {
+                drawable?.mutate()
+                drawable?.colorFilter = PorterDuffColorFilter(rh.gac( context,R.attr.cgmdexColor ), PorterDuff.Mode.SRC_IN)
+            }
             binding.buttonsLayout.cgmButton.setTextColor(rh.gac(context, R.attr.cgmdexColor))
         } else if (xDripIsBgSource) {
             binding.buttonsLayout.cgmButton.setCompoundDrawablesWithIntrinsicBounds(null, rh.gd(R.drawable.ic_xdrip), null, null)
+            for (drawable in binding.buttonsLayout.cgmButton.compoundDrawables) {
+                drawable?.mutate()
+                drawable?.colorFilter = PorterDuffColorFilter(rh.gac( context,R.attr.cgmxdripColor ), PorterDuff.Mode.SRC_IN)
+            }
             binding.buttonsLayout.cgmButton.setTextColor(rh.gac(context, R.attr.cgmxdripColor))
         }
         binding.buttonsLayout.cgmButton.visibility = (sp.getBoolean(R.string.key_show_cgm_button, false) && (xDripIsBgSource || dexcomIsSource)).toVisibility()
@@ -851,7 +852,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
     @Suppress("UNUSED_PARAMETER")
     fun updateTemporaryBasal(from: String) {
         binding.infoLayout.baseBasal.text = overviewData.temporaryBasalText
-        binding.infoLayout.baseBasal.setTextColor(overviewData.temporaryBasalColor)
+        binding.infoLayout.baseBasal.setTextColor(overviewData.temporaryBasalColor(context))
         binding.infoLayout.baseBasalIcon.setImageResource(overviewData.temporaryBasalIcon)
         binding.infoLayout.basalLayout.setOnClickListener {
             activity?.let { OKDialog.show(it, rh.gs(R.string.basal), overviewData.temporaryBasalDialogText) }
@@ -965,8 +966,6 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         graphData.addBgReadings(menuChartSettings[0][OverviewMenus.CharType.PRE.ordinal])
         if (buildHelper.isDev()) graphData.addBucketedData()
         graphData.addTreatments()
-        if(binding.graphsLayout.simplifyCheckbox.isChecked)
-            graphData.addTherapyEvents()
         if (menuChartSettings[0][OverviewMenus.CharType.ACT.ordinal])
             graphData.addActivity(0.8)
         if ((pump.pumpDescription.isTempBasalCapable || config.NSCLIENT) && menuChartSettings[0][OverviewMenus.CharType.BAS.ordinal])
@@ -1039,7 +1038,8 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
 
     @Suppress("UNUSED_PARAMETER")
     fun updateCalcProgress(from: String) {
-        binding.graphsLayout.iobCalculationProgress.text = overviewData.calcProgress
+        binding.progressBar.progress = overviewData.calcProgressPct
+        binding.progressBar.visibility = (overviewData.calcProgressPct != 100).toVisibility()
     }
 
     @Suppress("UNUSED_PARAMETER")
