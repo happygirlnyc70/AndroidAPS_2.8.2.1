@@ -192,14 +192,6 @@ class HistoryBrowseActivity : NoSplashAppCompatActivity() {
             ).show()
         }
 
-        binding.simplifyCheckbox.isChecked = sp.getBoolean(R.string.key_therapy_events_visible, true)
-        binding.simplifyCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                sp.putBoolean(rh.gs(R.string.key_therapy_events_visible), isChecked)
-                updateGUI("SimplifyCheckbox Change")
-            }
-        }
-
         val dm = DisplayMetrics()
         @Suppress("DEPRECATION")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
@@ -213,7 +205,7 @@ class HistoryBrowseActivity : NoSplashAppCompatActivity() {
         binding.bgGraph.gridLabelRenderer?.reloadStyles()
         binding.bgGraph.gridLabelRenderer?.labelVerticalWidth = axisWidth
 
-        overviewMenus.setupChartMenu(binding.chartMenuButton, overviewData, ::updateGUI)
+        overviewMenus.setupChartMenu(context, binding.chartMenuButton)
         prepareGraphsIfNeeded(overviewMenus.setting.size)
         savedInstanceState?.let { bundle ->
             rangeToDisplay = bundle.getInt("rangeToDisplay", 0)
@@ -383,8 +375,6 @@ class HistoryBrowseActivity : NoSplashAppCompatActivity() {
         graphData.addBgReadings(menuChartSettings[0][OverviewMenus.CharType.PRE.ordinal])
         if (buildHelper.isDev()) graphData.addBucketedData()
         graphData.addTreatments()
-        if(binding.simplifyCheckbox.isChecked)
-            graphData.addTherapyEvents()
         if (menuChartSettings[0][OverviewMenus.CharType.ACT.ordinal])
             graphData.addActivity(0.8)
         if (pump.pumpDescription.isTempBasalCapable && menuChartSettings[0][OverviewMenus.CharType.BAS.ordinal])

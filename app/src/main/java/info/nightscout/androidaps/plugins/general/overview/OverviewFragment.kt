@@ -197,7 +197,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             false
         }
         prepareGraphsIfNeeded(overviewMenus.setting.size)
-        overviewMenus.setupChartMenu(binding.graphsLayout.chartMenuButton, overviewData, ::updateGraph)
+        context?.let { overviewMenus.setupChartMenu(it, binding.graphsLayout.chartMenuButton) }
 
         binding.activeProfile.setOnClickListener(this)
         binding.activeProfile.setOnLongClickListener(this)
@@ -215,13 +215,6 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.infoLayout.apsMode.setOnClickListener(this)
         binding.infoLayout.apsMode.setOnLongClickListener(this)
         binding.activeProfile.setOnLongClickListener(this)
-
-        binding.graphsLayout.simplifyCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                sp.putBoolean(rh.gs(R.string.key_therapy_events_visible), isChecked)
-                updateGraph("SimplifyCheckbox Change")
-            }
-        }
     }
 
     @Synchronized
@@ -329,7 +322,6 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         }
         handler.postDelayed(refreshLoop, 60 * 1000L)
 
-        binding.graphsLayout.simplifyCheckbox.isChecked = sp.getBoolean(R.string.key_therapy_events_visible, true)
         updateTime("onResume")
         updateCalcProgress("onResume")
         updateProfile("onResume")
@@ -860,7 +852,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
     @Suppress("UNUSED_PARAMETER")
     fun updateTemporaryBasal(from: String) {
         binding.infoLayout.baseBasal.text = overviewData.temporaryBasalText
-        binding.infoLayout.baseBasal.setTextColor(overviewData.temporaryBasalColor)
+        binding.infoLayout.baseBasal.setTextColor(overviewData.temporaryBasalColor(context))
         binding.infoLayout.baseBasalIcon.setImageResource(overviewData.temporaryBasalIcon)
         binding.infoLayout.basalLayout.setOnClickListener {
             activity?.let { OKDialog.show(it, rh.gs(R.string.basal), overviewData.temporaryBasalDialogText) }
@@ -974,8 +966,6 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         graphData.addBgReadings(menuChartSettings[0][OverviewMenus.CharType.PRE.ordinal])
         if (buildHelper.isDev()) graphData.addBucketedData()
         graphData.addTreatments()
-        if(binding.graphsLayout.simplifyCheckbox.isChecked)
-            graphData.addTherapyEvents()
         if (menuChartSettings[0][OverviewMenus.CharType.ACT.ordinal])
             graphData.addActivity(0.8)
         if ((pump.pumpDescription.isTempBasalCapable || config.NSCLIENT) && menuChartSettings[0][OverviewMenus.CharType.BAS.ordinal])
