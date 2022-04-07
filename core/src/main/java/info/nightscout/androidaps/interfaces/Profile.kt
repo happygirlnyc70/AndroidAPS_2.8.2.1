@@ -117,6 +117,8 @@ interface Profile {
     fun getIsfsMgdlValues(): Array<ProfileValue>
     fun getSingleTargetsMgdl(): Array<ProfileValue>
 
+    val profileName: String
+
     open class ProfileValue(var timeAsSeconds: Int, var value: Double) {
 
         override fun equals(other: Any?): Boolean {
@@ -148,6 +150,10 @@ interface Profile {
             return (passed / 1000).toInt()
         }
 
+        fun milliSecFromMidnight(date: Long): Long {
+            val passed = DateTime(date).millisOfDay.toLong()
+            return passed
+        }
         /*
          * Units conversion
          */
