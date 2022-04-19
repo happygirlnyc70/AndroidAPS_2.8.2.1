@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/black"
     android:theme="@style/AppTheme.Launcher.AppWidgetContainer">
 
     <LinearLayout
@@ -20,7 +21,8 @@
             android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
             android:text="n/a"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/white"
+            android:textSize="12sp"
             tools:ignore="HardcodedText" />
 
         <TextView
@@ -31,7 +33,8 @@
             android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
             android:text="n/a"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/white"
+            android:textSize="12sp"
             tools:ignore="HardcodedText" />
 
     </LinearLayout>
@@ -76,7 +79,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/white"
+                android:textSize="12sp"
                 tools:ignore="HardcodedText" />
 
         </LinearLayout>
@@ -103,7 +107,8 @@
                     android:contentDescription="last delta"
                     android:text="Δ: "
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
                 <TextView
@@ -113,7 +118,8 @@
                     android:layout_gravity="end"
                     android:text="n/a"
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
@@ -131,7 +137,8 @@
                     android:contentDescription="15 minutes delta"
                     android:text="15m Δ: "
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
                 <TextView
@@ -141,7 +148,8 @@
                     android:layout_gravity="end"
                     android:text="n/a"
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
@@ -159,7 +167,8 @@
                     android:contentDescription="40 minutes delta"
                     android:text="40m Δ: "
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
                 <TextView
@@ -169,7 +178,8 @@
                     android:layout_gravity="end"
                     android:text="n/a"
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
@@ -209,7 +219,8 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
@@ -241,7 +252,8 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
@@ -272,7 +284,8 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
@@ -302,7 +315,8 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
@@ -334,7 +348,8 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
@@ -346,7 +361,8 @@
                 android:gravity="center_horizontal"
                 android:paddingBottom="3dp"
                 android:text="n/a"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:visibility="visible"
                 tools:ignore="HardcodedText" />

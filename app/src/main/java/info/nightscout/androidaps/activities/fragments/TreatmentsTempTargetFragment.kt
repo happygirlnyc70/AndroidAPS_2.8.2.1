@@ -83,6 +83,8 @@ class TreatmentsTempTargetFragment : DaggerFragment() {
         actionHelper.setOnRemoveHandler { removeSelected(it) }
         setHasOptionsMenu(true)
         binding.recyclerview.layoutManager = LinearLayoutManager(view.context)
+        binding.recyclerview.emptyView = binding.noRecordsText
+        binding.recyclerview.loadingView = binding.progressBar
     }
 
     private fun refreshFromNightscout() {
@@ -111,6 +113,7 @@ class TreatmentsTempTargetFragment : DaggerFragment() {
 
     fun swapAdapter() {
         val now = System.currentTimeMillis()
+        binding.recyclerview.isLoading = true
         disposable +=
             if (showInvalidated)
                 repository
@@ -189,8 +192,6 @@ class TreatmentsTempTargetFragment : DaggerFragment() {
                     else                                       -> holder.binding.reasonColon.currentTextColor
                 }
             )
-            val nextTimestamp = if (tempTargetList.size != position + 1) tempTargetList[position + 1].timestamp else 0L
-            holder.binding.delimiter.visibility = dateUtil.isSameDayGroup(tempTarget.timestamp, nextTimestamp).toVisibility()
         }
 
         override fun getItemCount() = tempTargetList.size

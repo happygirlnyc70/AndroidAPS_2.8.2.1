@@ -84,6 +84,8 @@ class TreatmentsProfileSwitchFragment : DaggerFragment() {
         setHasOptionsMenu(true)
         binding.recyclerview.setHasFixedSize(true)
         binding.recyclerview.layoutManager = LinearLayoutManager(view.context)
+        binding.recyclerview.emptyView = binding.noRecordsText
+        binding.recyclerview.loadingView = binding.progressBar
     }
 
     private fun refreshFromNightscout() {
@@ -128,7 +130,7 @@ class TreatmentsProfileSwitchFragment : DaggerFragment() {
 
     fun swapAdapter() {
         val now = System.currentTimeMillis()
-
+        binding.recyclerview.isLoading = true
         disposable +=
             if (showInvalidated)
                 profileSwitchWithInvalid(now)
@@ -212,8 +214,6 @@ class TreatmentsProfileSwitchFragment : DaggerFragment() {
             }
             holder.binding.clone.visibility = (profileSwitch is ProfileSealed.PS).toVisibility()
             holder.binding.spacer.visibility = (profileSwitch is ProfileSealed.PS).toVisibility()
-            val nextTimestamp = if (profileSwitchList.size != position + 1) profileSwitchList[position + 1].timestamp else 0L
-            holder.binding.delimiter.visibility = dateUtil.isSameDayGroup(profileSwitch.timestamp, nextTimestamp).toVisibility()
         }
 
         override fun getItemCount() = profileSwitchList.size

@@ -73,6 +73,8 @@ class TreatmentsCareportalFragment : DaggerFragment() {
         setHasOptionsMenu(true)
         binding.recyclerview.setHasFixedSize(true)
         binding.recyclerview.layoutManager = LinearLayoutManager(view.context)
+        binding.recyclerview.emptyView = binding.noRecordsText
+        binding.recyclerview.loadingView = binding.progressBar
     }
 
     private fun refreshFromNightscout() {
@@ -105,6 +107,7 @@ class TreatmentsCareportalFragment : DaggerFragment() {
 
     fun swapAdapter() {
         val now = System.currentTimeMillis()
+        binding.recyclerview.isLoading = true
         disposable +=
             if (showInvalidated)
                 repository
@@ -170,8 +173,6 @@ class TreatmentsCareportalFragment : DaggerFragment() {
                 actionHelper.updateSelection(position, therapyEvent, holder.binding.cbRemove.isChecked)
             }
             holder.binding.cbRemove.isChecked = actionHelper.isSelected(position)
-            val nextTimestamp = if (therapyList.size != position + 1) therapyList[position + 1].timestamp else 0L
-            holder.binding.delimiter.visibility = dateUtil.isSameDayGroup(therapyEvent.timestamp, nextTimestamp).toVisibility()
         }
 
         override fun getItemCount() = therapyList.size

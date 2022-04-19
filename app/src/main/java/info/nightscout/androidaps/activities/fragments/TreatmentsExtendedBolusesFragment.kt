@@ -79,10 +79,13 @@ class TreatmentsExtendedBolusesFragment : DaggerFragment() {
         setHasOptionsMenu(true)
         binding.recyclerview.setHasFixedSize(true)
         binding.recyclerview.layoutManager = LinearLayoutManager(view.context)
+        binding.recyclerview.emptyView = binding.noRecordsText
+        binding.recyclerview.loadingView = binding.progressBar
     }
 
     fun swapAdapter() {
         val now = System.currentTimeMillis()
+        binding.recyclerview.isLoading = true
         disposable += if (showInvalidated)
             repository
                 .getExtendedBolusDataIncludingInvalidFromTime(now - millsToThePast, false)
@@ -160,8 +163,6 @@ class TreatmentsExtendedBolusesFragment : DaggerFragment() {
                 }
                 holder.binding.cbRemove.isChecked = actionHelper.isSelected(position)
             }
-            val nextTimestamp = if (extendedBolusList.size != position + 1) extendedBolusList[position + 1].timestamp else 0L
-            holder.binding.delimiter.visibility = dateUtil.isSameDayGroup(extendedBolus.timestamp, nextTimestamp).toVisibility()
         }
 
         override fun getItemCount() = extendedBolusList.size

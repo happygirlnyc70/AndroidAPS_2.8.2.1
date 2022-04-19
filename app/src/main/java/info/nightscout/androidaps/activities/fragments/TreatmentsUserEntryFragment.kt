@@ -63,6 +63,8 @@ class TreatmentsUserEntryFragment : DaggerFragment() {
         setHasOptionsMenu(true)
         binding.recyclerview.setHasFixedSize(true)
         binding.recyclerview.layoutManager = LinearLayoutManager(view.context)
+        binding.recyclerview.emptyView = binding.noRecordsText
+        binding.recyclerview.loadingView = binding.progressBar
     }
 
     private fun exportUserEntries() {
@@ -76,6 +78,7 @@ class TreatmentsUserEntryFragment : DaggerFragment() {
 
     fun swapAdapter() {
         val now = System.currentTimeMillis()
+        binding.recyclerview.isLoading = true
         disposable +=
             if (showLoop)
                 repository
@@ -131,8 +134,6 @@ class TreatmentsUserEntryFragment : DaggerFragment() {
             holder.binding.iconSource.setImageResource(userEntryPresentationHelper.iconId(current.source))
             holder.binding.values.text = userEntryPresentationHelper.listToPresentationString(current.values)
             holder.binding.values.visibility = (holder.binding.values.text != "").toVisibility()
-            val nextTimestamp = if (entries.size != position + 1) entries[position + 1].timestamp else 0L
-            holder.binding.delimiter.visibility = dateUtil.isSameDayGroup(current.timestamp, nextTimestamp).toVisibility()
         }
 
         inner class UserEntryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
